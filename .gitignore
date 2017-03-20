@@ -25,3 +25,7 @@ _testmain.go
 .idea
 aster.iml
 bin
+
+vendor/**
+!vendor/manifest
+
