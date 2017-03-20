@@ -10,10 +10,6 @@ import (
 // MessageProcessor will ne called when new message arrived
 type MessageProcessor interface {
 	ProcessMessage(*kafka.Message) error
-}
-
-// DaemonThread will do background work when consumer worker starting
-type DaemonThread interface {
 	StartDaemon() error
 	StopDaemon() error
 }
@@ -30,7 +26,6 @@ type ConsumerWorker struct {
 	errors            int64
 	succeed           int64
 	messageProcessor  MessageProcessor // Called after new message arrived
-	daemonThread      DaemonThread
 	workerThreads     []*workerThread
 	reportStatsTicker *time.Ticker
 }
@@ -38,10 +33,8 @@ type ConsumerWorker struct {
 func (w *ConsumerWorker) Stop() error {
 
 	w.logger.Infof("begin stop consumer worker daemonThread")
-	if w.daemonThread != nil {
-		if err := w.daemonThread.StopDaemon(); err != nil {
-			w.logger.Errorf("failt to StopDaemon %s", err)
-		}
+	if err := w.messageProcessor.StopDaemon(); err != nil {
+		w.logger.Errorf("failt to StopDaemon %s", err)
 	}
 
 	w.logger.Infof("begin stop consumer worker thread")
@@ -60,10 +53,8 @@ func (w *ConsumerWorker) Wait() {
 }
 
 func (w *ConsumerWorker) Start() error {
-	if w.daemonThread != nil {
-		if err := w.daemonThread.StartDaemon(); err != nil {
-			return err
-		}
+	if err := w.messageProcessor.StartDaemon(); err != nil {
+		return err
 	}
 
 	var i int64
@@ -94,7 +85,6 @@ func (w *ConsumerWorker) Start() error {
 
 func NewConsumerWorker(broker, group, topic string,
 	threads int64, messageProcessor MessageProcessor,
-	daemonThread DaemonThread,
 	logger *logrus.Entry) (*ConsumerWorker, error) {
 
 	w := ConsumerWorker{
@@ -103,7 +93,6 @@ func NewConsumerWorker(broker, group, topic string,
 		topic:             topic,
 		threads:           threads,
 		messageProcessor:  messageProcessor,
-		daemonThread:      daemonThread,
 		waitGroup:         &sync.WaitGroup{},
 		logger:            logger,
 		workerThreads:     []*workerThread{},

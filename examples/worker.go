@@ -21,8 +21,6 @@ const (
 	WORKER_NAME = "my-worker"
 )
 
-
-
 // Register this worker to aster at application startup automatically
 func init() {
 	worker.Register(WORKER_NAME, Init)
@@ -63,13 +61,12 @@ func Init() (*worker.ConsumerWorker, error) {
 		logger:    loggerWithField,
 		mutex:     &sync.Mutex{},
 		closeChan: make(chan bool),
+		messages:  0,
 	}
 	worker, err := worker.NewConsumerWorker(brokers, group, topic, threads, processor,
-		processor,
 		loggerWithField)
 	return worker, err
 }
-
 
 // Main function as entry point of an application
 func main() {
@@ -107,29 +104,35 @@ func main() {
 	logger.Info("app will exist!")
 }
 
-
+// User implement funcs
 type myProcessor struct {
 	logger    *logrus.Entry
 	mutex     *sync.Mutex
+	messages  int64
 	closeChan chan bool
 }
 
+// First, this func will be called when new message received.
 func (p *myProcessor) ProcessMessage(message *kafka.Message) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
 	p.logger.Debugf("Receive: %s", string(message.Value))
+	p.messages++
 	return nil
 }
 
+// This func will call at worker startup time.
 func (p *myProcessor) StartDaemon() error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	p.logger.Info("test demon thread starting ")
 	go func() {
-		timer := time.NewTicker(60 * time.Second)
+		timer := time.NewTicker(5 * time.Second)
 	outer:
 		for {
 			select {
 			case <-timer.C:
-
+				p.logger.Infof("message processed: %d", p.messages)
 			case <-p.closeChan:
 				break outer
 			}
@@ -139,6 +142,7 @@ func (p *myProcessor) StartDaemon() error {
 	return nil
 }
 
+// When worker received a stop signal, this func will be called
 func (p *myProcessor) StopDaemon() error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
