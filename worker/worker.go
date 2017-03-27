@@ -39,6 +39,7 @@ func (w *ConsumerWorker) Stop() error {
 
 	w.logger.Infof("begin stop consumer worker thread")
 	for _, wt := range w.workerThreads {
+		w.waitGroup.Done()
 		wt.stop()
 	}
 	w.logger.Infof("end stop consumer worker thread")
