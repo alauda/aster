@@ -111,7 +111,7 @@ func NewConsumerWorker(broker, group, topic string,
 func (w *ConsumerWorker) printStats() {
 	w.statsMutex.Lock()
 	defer w.statsMutex.Unlock()
-	w.logger.Infof("processed %d, error %d, succeed %d", (w.errors + w.succeed), w.errors, w.succeed)
+	w.logger.Infof("[aster_worker]processed %d, error %d, succeed %d", (w.errors + w.succeed), w.errors, w.succeed)
 	w.errors = 0
 	w.succeed = 0
 }

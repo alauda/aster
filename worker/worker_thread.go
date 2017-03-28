@@ -72,10 +72,10 @@ func (wt *workerThread) start() {
 		case ev := <-wt.consumer.Events():
 			switch e := ev.(type) {
 			case kafka.AssignedPartitions:
-				wt.logger.Debugf("[Event:AssignedPartitions] %v", e)
+				wt.logger.Infof("[Event:AssignedPartitions] %v", e)
 				wt.consumer.Assign(e.Partitions)
 			case kafka.RevokedPartitions:
-				wt.logger.Debugf("[Event:RevokedPartitions] %v", e)
+				wt.logger.Infof("[Event:RevokedPartitions] %v", e)
 				wt.consumer.Unassign()
 			case *kafka.Message:
 				//wt.logger.Debugf("[Event:Message] %s#%d#%d: %s",
@@ -114,7 +114,7 @@ func (wt *workerThread) start() {
 func (wt *workerThread) reportStats() {
 	wt.statsMutex.Lock()
 	defer wt.statsMutex.Unlock()
-	wt.logger.Infof("processed %d, error %d, succeed %d", (wt.errors + wt.succeed), wt.errors, wt.succeed)
+	wt.logger.Infof("[aster_worker_thread]processed %d, error %d, succeed %d", (wt.errors + wt.succeed), wt.errors, wt.succeed)
 	wt.errors = 0
 	wt.succeed = 0
 }

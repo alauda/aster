@@ -24,19 +24,18 @@ func DefaultTextFormatter() logrus.Formatter {
 	return customFormatter
 }
 
-func InitStdoutLogger() *logrus.Logger {
-	customFormatter := DefaultTextFormatter()
+func InitStdoutLogger(conf LogConfig) *logrus.Logger {
 	logger := logrus.New()
 	logger.Out = os.Stdout
-	logger.Level = logrus.DebugLevel
-	logger.Formatter = customFormatter
+	logger.Level = conf.Level
+	logger.Formatter = conf.Formatter
 	return logger
 }
 
 func SetupLogger(conf LogConfig) (*logrus.Logger, error) {
 
 	if conf.Stdout {
-		return InitStdoutLogger(), nil
+		return InitStdoutLogger(conf), nil
 	}
 
 	var err error
