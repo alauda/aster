@@ -41,7 +41,6 @@ func SetupLogger(conf LogConfig) (*logrus.Logger, error) {
 
 	var err error
 	path := fmt.Sprintf("%s/%s.log.%s", conf.LogDir, conf.AppName, "%Y%m%d")
-	fmt.Println(path)
 	if err = utils.EnsureDir(path); err != nil {
 		return nil, err
 	}
