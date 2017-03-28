@@ -31,7 +31,7 @@ func newWorkerThread(w *ConsumerWorker, index int64) *workerThread {
 		statsMutex:        &sync.Mutex{},
 		errors:            0,
 		succeed:           0,
-		reportStatsTicker: time.NewTicker(30 * time.Second),
+		reportStatsTicker: time.NewTicker(60 * time.Second),
 	}
 }
 
