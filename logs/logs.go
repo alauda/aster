@@ -48,7 +48,7 @@ func SetupLogger(conf LogConfig) (*logrus.Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	rotatelogs.WithLinkName(fmt.Sprintf("%s/%s", conf.LogDir, conf.AppName)).Configure(rl)
+	rotatelogs.WithLinkName(fmt.Sprintf("%s/%s.log", conf.LogDir, conf.AppName)).Configure(rl)
 
 	out := io.MultiWriter(os.Stdout, rl)
 	logger := logrus.Logger{
