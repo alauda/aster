@@ -1,5 +1,12 @@
+GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-all: benchmark example
+all: fmt vet benchmark example
+
+fmt:
+	gofmt -l -w ${GOFILES_NOVENDOR}
+
+vet:
+	go vet ${GOFILES_NOVENDOR}
 
 benchmark:
 	go build -o bin/publisher benchmarks/publisher.go

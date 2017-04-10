@@ -114,7 +114,7 @@ func (wt *workerThread) start() {
 func (wt *workerThread) reportStats() {
 	wt.statsMutex.Lock()
 	defer wt.statsMutex.Unlock()
-	wt.logger.Infof("[aster_worker_thread]processed %d, error %d, succeed %d", (wt.errors + wt.succeed), wt.errors, wt.succeed)
+	wt.logger.Infof("[aster_worker_thread]processed %d Kafka messages, error %d, succeed %d", (wt.errors + wt.succeed), wt.errors, wt.succeed)
 	wt.errors = 0
 	wt.succeed = 0
 }
