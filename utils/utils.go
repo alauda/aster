@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,17 @@ func EnvString(key, defaultValue string) string {
 		return defaultValue
 	}
 	return v
+}
+
+func EnvBool(key string, defaultValue bool) bool {
+	v := os.Getenv(key)
+	if len(v) == 0 {
+		return defaultValue
+	}
+	if strings.ToLower(v) == "true" || strings.ToLower(v) == "t" {
+		return true
+	}
+	return false
 }
 
 func EnvInt64(key string, defaultValue int64) int64 {
