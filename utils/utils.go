@@ -38,6 +38,17 @@ func EnvInt64(key string, defaultValue int64) int64 {
 	return defaultValue
 }
 
+func EnvFloat64(key string, defaultValue float64) float64 {
+	v := os.Getenv(key)
+	if len(v) == 0 {
+		return defaultValue
+	}
+	if float64Value, err := strconv.ParseFloat(v, 64); err == nil {
+		return float64Value
+	}
+	return defaultValue
+}
+
 func EnsureDir(p string) error {
 	path := path.Dir(p)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
